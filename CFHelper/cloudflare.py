@@ -2,8 +2,6 @@ import CloudFlare
 from CloudFlare.exceptions import CloudFlareAPIError
 
 
-
-
 def list_zones(cf):
     zones = cf.zones.get()
     for zone in zones:
@@ -45,8 +43,27 @@ def create_dns_zone(domain, ip, email, api_key):
     for dns_record in dns_records:
         try:
             r = cf.zones.dns_records.post(zone_id, data=dns_record)
-            print(f"CREATED: {dns_record}")
+            print(f"DNS ZONE CREATED: {dns_record}")
         except CloudFlareAPIError as e:
             print(f"{dns_record} Error: {str(e)}")
 
     return True
+
+
+def delete_domain(domain, email, api_key):
+    """
+    Function to delete domain from cloudflare
+    :param domain: The website domain name
+    :param email: Account Email Used in Authentication
+    :param api_key: The Global API Key
+    """
+    cf = CloudFlare.CloudFlare(email=email, token=api_key)
+    zones = cf.zones.get(params={'name': domain})
+    if zones:
+        try:
+            cf.zones.delete(zones[0]['id'])
+            print(f"{domain}: Deleted Successfully.")
+        except Exception as e:
+            print(str(e))
+    else:
+        print(f"{domain} Doesn't Exist.")

@@ -10,15 +10,26 @@ or clone the repository
 git clone https://github.com/cefege/Cloudflare-Helper.git
 ```
 ## Usage
-1. Import `CFHelper` 
+- Import `CFHelper` 
 ```
 import CFHelper
 ```
-2. Use `create_dns_zone` function
+- Create DNS Zones
 ```
 CFHelper.create_dns_zone(domain, ip, email, api_key)
 ```
+
+- Remove Site from Cloudflare
+```angular2html
+CFHelper.delete_domain(domain, email, api_key)
+```
 Alternatively, 
+- Create DNS Zones
 ```angular2html
 python main.py --domain "" --ip "" --email "" --api-key ""
+```
+
+- Remove Site from Cloudflare
+```angular2html
+python main.py --domain "" --email "" --api-key "" --delete
 ```
