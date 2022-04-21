@@ -1,3 +1,5 @@
+import time
+
 import CloudFlare
 from CloudFlare.exceptions import CloudFlareAPIError
 
@@ -10,7 +12,7 @@ def list_zones(cf):
         print("zone_id=%s zone_name=%s" % (zone_id, zone_name))
 
 
-def create_dns_zone(domain, ip, email, api_key):
+def create_dns_zone(domain, ip, email, api_key, max_trial_limit=30, sleep_period=5):
     """
     Function To Create New Cloudflare Zone and Configure DNS Records
     :param domain: The website domain name
@@ -21,19 +23,27 @@ def create_dns_zone(domain, ip, email, api_key):
     """
     # Create Cloudflare instance
     cf = CloudFlare.CloudFlare(email=email, token=api_key)
-    try:
-        # Create zone with the domain name
-        zone_info = cf.zones.post(data={'jump_start': False, 'name': domain})
-        print(f"{domain}: CREATED.")
-        # Get zone id
-
-    except Exception as e:
-        if "already exists" in str(e):
-            print(f"{domain}: Already Exist.")
-            zone_info = cf.zones.get(params={'name': domain})[0]
-        else:
-            print(f"API Exception: {str(e)}")
-            exit()
+    n_trials = 0
+    while n_trials < max_trial_limit:
+        try:
+            # Create zone with the domain name
+            zone_info = cf.zones.post(data={'jump_start': False, 'name': domain})
+            print(f"{domain}: CREATED.")
+            break
+            # Get zone id
+        except Exception as e:
+            if "already exists" in str(e):
+                print(f"{domain}: Already Exist.")
+                zone_info = cf.zones.get(params={'name': domain})[0]
+                break
+            else:
+                if "temporarily restricted" in str(e):
+                    print(f"API Blocked: {str(e)}, Sleep for {sleep_period}s, Trial #{n_trials}")
+                    n_trials += 1
+                    time.sleep(sleep_period)
+                else:
+                    print(f"API Exception: {str(e)}")
+                    exit()
 
     zone_id = zone_info['id']
     # Add DNS records information
@@ -41,12 +51,20 @@ def create_dns_zone(domain, ip, email, api_key):
                    {'name': 'www', 'type': 'CNAME', 'content': domain, 'proxied': True}, ]
 
     for dns_record in dns_records:
-        try:
-            r = cf.zones.dns_records.post(zone_id, data=dns_record)
-            print(f"DNS ZONE CREATED: {dns_record}")
-        except CloudFlareAPIError as e:
-            print(f"{dns_record} Error: {str(e)}")
-
+        n_trials = 0
+        while n_trials < max_trial_limit:
+            try:
+                r = cf.zones.dns_records.post(zone_id, data=dns_record)
+                print(f"DNS ZONE CREATED: {dns_record}")
+                break
+            except CloudFlareAPIError as e:
+                if "temporarily restricted" in str(e):
+                    print(f"API Blocked: {str(e)}, Sleep for {sleep_period}s, Trial #{n_trials}")
+                    n_trials += 1
+                    time.sleep(sleep_period)
+                else:
+                    print(f"{dns_record} Error: {str(e)}")
+                    break
     return True
 
 
