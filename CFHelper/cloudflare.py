@@ -12,7 +12,7 @@ def list_zones(cf):
         print("zone_id=%s zone_name=%s" % (zone_id, zone_name))
 
 
-def create_dns_zone(domain, ip, email, api_key, max_trial_limit=30, sleep_period=5):
+def create_dns_zone(domain, ip, email, api_key,ssl_value, max_trial_limit=30, sleep_period=5):
     """
     Function To Create New Cloudflare Zone and Configure DNS Records
     :param domain: The website domain name
@@ -46,6 +46,9 @@ def create_dns_zone(domain, ip, email, api_key, max_trial_limit=30, sleep_period
                     exit()
 
     zone_id = zone_info['id']
+
+    # Create ssl
+    cf.zones.settings.ssl.patch(zone_id, data={'value': ssl_value})
     # Add DNS records information
     dns_records = [{'name': domain, 'type': 'A', 'content': ip, 'proxied': True},
                    {'name': 'www', 'type': 'CNAME', 'content': domain, 'proxied': True}, ]
