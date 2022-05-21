@@ -23,6 +23,20 @@ CFHelper.create_dns_zone(domain, ip, email, api_key, ssl_value)
 ```angular2html
 CFHelper.delete_domain(domain, email, api_key)
 ```
+
+- Remove DNS records
+```angular2html
+CFHelper.delete_DNS_record(domain, zone_types, email, api_key)
+```
+Note:
+zone_type should be one or more values from the following list:
+```angular2html
+['', 'ALL', 'A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'SRV', 'PTR', 'AFSDB',
+                                   'APL', 'CAA', 'DNSKEY', 'CDNSKEY', 'CERT', 'DCHID', 'DNAME', 'HIP',
+                                   'IPSECKEY', 'LOC', 'NAPTR', 'NSEC', 'RRSIG', 'RP', 'SSHFP']
+```
+For example: zone_types="A,CNAME"
+
 Alternatively, 
 - Create DNS Zones
 ```angular2html
@@ -34,5 +48,18 @@ Nots: Supported SSL values
 ```
 - Remove Site from Cloudflare
 ```angular2html
-python main.py --domain "" --email "" --api-key "" --delete
+python main.py --domain "" --email "" --api-key "" --delete-domain
 ```
+
+- Remove DNS records
+```angular2html
+python main.py --domain "" --email "" --api-key "" --delete-dns ""
+```
+
+Note: --delete-dns should be one or more values from the following list:
+```angular2html
+['', 'ALL', 'A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'SRV', 'PTR', 'AFSDB',
+                                   'APL', 'CAA', 'DNSKEY', 'CDNSKEY', 'CERT', 'DCHID', 'DNAME', 'HIP',
+                                   'IPSECKEY', 'LOC', 'NAPTR', 'NSEC', 'RRSIG', 'RP', 'SSHFP']
+```
+For Example: --delete-dns "A,CNAME"

@@ -12,7 +12,7 @@ def list_zones(cf):
         print("zone_id=%s zone_name=%s" % (zone_id, zone_name))
 
 
-def create_dns_zone(domain, ip, email, api_key,ssl_value, max_trial_limit=30, sleep_period=5):
+def create_dns_zone(domain, ip, email, api_key, ssl_value, max_trial_limit=30, sleep_period=5):
     """
     Function To Create New Cloudflare Zone and Configure DNS Records
     :param domain: The website domain name
@@ -88,3 +88,12 @@ def delete_domain(domain, email, api_key):
             print(str(e))
     else:
         print(f"{domain} Doesn't Exist.")
+
+
+def delete_DNS_record(domain, zone_types, email, api_key):
+    cf = CloudFlare.CloudFlare(email=email, token=api_key)
+    zone = cf.zones.get(params={'name': domain})[0]
+    records = cf.zones.dns_records(zone['id'])
+    for record in records:
+        if 'ALL' in zone_types or record['type'] in zone_types:
+            cf.zones.dns_records.delete(zone['id'], record['id'])
