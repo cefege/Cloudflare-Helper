@@ -97,3 +97,12 @@ def delete_DNS_record(domain, zone_types, email, api_key):
     for record in records:
         if 'ALL' in zone_types or record['type'] in zone_types:
             cf.zones.dns_records.delete(zone['id'], record['id'])
+
+def list_all_zones(email, api_key):
+    cf = CloudFlare.CloudFlare(email=email, token=api_key)
+    for zone in cf.zones():
+        pass
+        # domain,ns1,ns2,ssl_type,domain_status
+        print(f"{zone['name']}, {zone['name_servers'][0]},"
+              f" {zone['name_servers'][1]}, "
+              f"{cf.zones.settings.ssl.get(zone['id']).get('value', '')}, {zone['status']}")

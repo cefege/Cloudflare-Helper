@@ -37,6 +37,10 @@ zone_type should be one or more values from the following list:
 ```
 For example: zone_types="A,CNAME"
 
+- List All Zones
+```angular2html
+CFHelper.list_all_zones(args.email, args.api_key)
+```
 Alternatively, 
 - Create DNS Zones
 ```angular2html
@@ -63,3 +67,8 @@ Note: --delete-dns should be one or more values from the following list:
                                    'IPSECKEY', 'LOC', 'NAPTR', 'NSEC', 'RRSIG', 'RP', 'SSHFP']
 ```
 For Example: --delete-dns "A,CNAME"
+
+- List all zones
+- ```angular2html
+python main.py --domain "" --email "" --api-key "" --ls
+```
