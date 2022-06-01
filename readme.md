@@ -69,6 +69,6 @@ Note: --delete-dns should be one or more values from the following list:
 For Example: --delete-dns "A,CNAME"
 
 - List all zones
-- ```angular2html
+```angular2html
 python main.py --domain "" --email "" --api-key "" --ls
 ```
